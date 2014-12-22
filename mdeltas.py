@@ -1,11 +1,11 @@
 """
 """
+from scipy.linalg import cho_factor, cho_solve
 from scipy.stats import entropy
 import numpy as np
 
-
 default_deltas = range(1, 5) + range(10, 80, 5)
-
+b_cached = np.identity(2, np.float64)
 
 def symmetric_kl_div(p, q):
     eps = np.finfo(p.dtype).eps
@@ -30,7 +30,8 @@ def mdeltas(P, p_within_class, p_across_class, deltas=default_deltas):
     for i, delta_t in enumerate(deltas):
         y[i] = m_measure_delta(P, delta_t)
     A = (np.array([p_within_class.T, p_across_class.T])).T
-    x = np.dot(np.dot(np.linalg.inv(np.dot(A.T, A)), A.T), y)
+    AtAi = cho_solve(cho_factor(np.dot(A.T, A)), b_cached)
+    x = np.dot(np.dot(AtAi, A.T), y)
     return x[1] - x[0]
 
 
