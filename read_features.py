@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 # TODO
@@ -24,7 +25,10 @@ def read_phone_labels(f, fstep):
         raise
 
 def read_features(f):
-    with open(f) as fin:
-        aux = np.genfromtxt(fin, delimiter=' ')
-    return aux[:, 1:]
+    if os.path.splitext(f)[1] == ".npy":
+        return np.load(f)
+    else:
+        with open(f) as fin:
+            aux = np.genfromtxt(fin, delimiter=' ')
+        return aux[:, 1:]
 
