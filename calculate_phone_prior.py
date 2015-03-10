@@ -17,8 +17,13 @@ if __name__ == "__main__":
     n_within = np.zeros(len(deltas))
     n_total = np.zeros(len(deltas))
 
-    files = [os.path.join(dir_name, f) for f in os.listdir(dir_name)
-                if f[-4:] == "." + ext]
+    if ext[0] != ".":
+        ext = "." + ext
+
+    files = []
+    for subdir, _, curr_files in os.walk(dir_name):
+        files += [os.path.join(subdir, f) for f in curr_files\
+                    if os.path.splitext(f)[1] == ext] 
     for f in files:
         phone_labels = read_phone_labels(f, fstep)
         for i_delta, delta_t in enumerate(deltas):
