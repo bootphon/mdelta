@@ -60,8 +60,8 @@ if __name__ == "__main__":
     ext = sys.argv[2]
     prior_prob_file = sys.argv[3]
     OUT_DIR = sys.argv[4]
-    do_avg = len(sys.argv) > 5
-    avg_symm = len(sys.argv) > 6 and sys.argv[6] == "average"
+    do_avg = len(sys.argv) > 5 and sys.argv[6] == "average"
+    avg_symm = len(sys.argv) > 6 and sys.argv[6] == "average_symm"
     cos_dist = len(sys.argv) > 7
     ncpus = 4
 
