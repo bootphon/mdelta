@@ -67,7 +67,7 @@ def mdelta(P, t, p_within_class, p_across_class, deltas=default_deltas,
             negative=False, dist=symmetric_kl_div):
     y = np.empty((len(deltas),))
     for i, delta_t in enumerate(deltas):
-        y[i] = m_measure_delta(P, t, delta_t, negative, dist=symmetric_kl_div)
+        y[i] = m_measure_delta(P, t, delta_t, negative, dist=dist)
     return mdelta_reg_with_missing_data(y, p_within_class, p_across_class)
 
 def avg_mmeasure_on_avg(P, deltas=default_deltas, dist=symmetric_kl_div):
