@@ -1,0 +1,17 @@
+---
+title: "MDelta exploratory analysis"
+output: html_document
+---
+
+```{r init, include=FALSE, cache=FALSE}
+source("../src/analysis/read.R")
+```
+
+```{r setup, include=FALSE, cache=FALSE}
+MDELTA_FNS <- dir("/fhgfs/bootphon/scratch/edunbar/buckeye_fb/fb_mdelta",
+                  full.names=T)
+```
+
+```{r read-input, include=FALSE, cache=TRUE}
+mdelta_byframe <- read_all_mdelta(MDELTA_FNS)
+```
