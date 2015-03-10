@@ -8,7 +8,7 @@ default_deltas = range(1, 5) + range(10, 80, 5)
 b_cached = np.identity(2, np.float64)
 
 def cos_dist(x, y):
-    z = np.norm(x)*np.norm(y)
+    z = np.linalg.norm(x)*np.linalg.norm(y)
     return 1. - np.dot(x,y)/z
 
 def symmetric_kl_div(p, q):
