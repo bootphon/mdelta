@@ -62,6 +62,7 @@ if __name__ == "__main__":
     OUT_DIR = sys.argv[4]
     do_avg = len(sys.argv) > 5
     avg_symm = len(sys.argv) > 6
+    cos_dist = len(sys.argv) > 7
     ncpus = 4
 
     prior_probs = np.genfromtxt(prior_prob_file, delimiter=',', skip_header=1)
