@@ -4,14 +4,87 @@ output: html_document
 ---
 
 ```{r init, include=FALSE, cache=FALSE}
+library(ggplot2)
+library(magrittr)
+library(plyr)
+library(foreach)
+library(doParallel)
 source("../src/analysis/read.R")
+source("../src/analysis/util.R")
+source("../src/analysis/clean.R")
 ```
 
 ```{r setup, include=FALSE, cache=FALSE}
-MDELTA_FNS <- dir("/fhgfs/bootphon/scratch/edunbar/buckeye_fb/fb_mdelta",
-                  full.names=T)
+MDELTA_FNS <- dir(
+"/Users/emd/Volumes/oberon/fhgfs/bootphon/scratch/edunbar/buckeye_fb/fb_mdelta_cos",
+full.names=T)
+VAD_INTERVALS_FN <- "../data/buckeye_vad.csv"
 ```
 
 ```{r read-input, include=FALSE, cache=TRUE}
-mdelta_byframe <- read_all_mdelta(MDELTA_FNS)
+mdelta_byframe_raw <- read_all_mdelta(MDELTA_FNS)
+vad_intervals <- read_intervals(VAD_INTERVALS_FN)
+```
+
+```{r extend-input, include=FALSE, cache=TRUE}
+mdelta_nona <- mdelta_byframe_raw %>% replace_na
+mdelta_cut <- mdelta_byframe_raw %>% cut_mdelta %>% replace_na
+```
+
+How far from the file edge is the m-delta reliable?
+---------------------------------------------------
+
+```{r mdelta-by-distance-from-end}
+d <- mdelta_byframe_raw %>% subset(frames_to_end <= 300)
+ggplot(d, aes(x=frames_to_end, y=m_delta)) +
+  stat_summary(aes(linetype=direction), geom="line",
+               fun.y="median") +
+  facet_grid(second_half ~ ., scale="free_x") +
+  coord_cartesian(ylim=c(0, 0.05))
+```
+
+What do the VAD and VAD+mdelta intervals look like?
+---------------------------------
+
+```{r vad-intervals-calc, cache=TRUE}
+registerDoParallel()
+mdelta_vad_files <- subset(mdelta_cut,
+                           f_id %in% levels(vad_intervals$f_id))
+interval_mdelta <- ddply(mdelta_vad_files, .(f_id), .fun=function(d_m)
+  intervals_and_inverted(subset(vad_intervals,f_id==as.character(d_m$f_id)[1]),
+                         d_m, stat=median_na), .parallel=TRUE)
+interval_mdelta$interval_length <- interval_mdelta$end - interval_mdelta$start
+interval_mdelta$interval_mid <- interval_mdelta$start +
+                                interval_mdelta$interval_length/2.0
+```
+
+```{r vad-intervals}
+d <- interval_mdelta %$% interval_mdelta[f_id=="s0101a",]
+p <- ggplot(d, aes(x=interval_mid, y=m_delta)) +
+  geom_bar(aes(fill=inverted, width=interval_length), stat="identity",
+           position="identity")
+print(p)
+```
+
+```{r vad-nonvad-comparison}
+p <- ggplot(interval_mdelta, aes(x=inverted, y=m_delta)) +
+  stat_summary(aes(fill=inverted), fun.y="median", geom="bar") +
+  facet_wrap(~ f_id)
+print(p)
+```
+
+```{r vad-nonvad-comparison-all}
+p <- ggplot(interval_mdelta, aes(x=inverted, y=m_delta)) +
+  stat_summary(aes(fill=inverted), fun.y="median", geom="bar")
+print(p)
+```
+
+Mdelta versus length
+--------------------
+
+```{r mdelta-by-length}
+d <- interval_mdelta[interval_mdelta$inverted==F,]
+p <- ggplot(d, aes(x=interval_length, y=m_delta)) + geom_point()
+p <- p + geom_hline(aes(yintercept=median(d$m_delta)), colour="red")
+print(p)
 ```
