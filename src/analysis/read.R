@@ -35,8 +35,8 @@ read_all_mdelta <- function(fns, read_f=read_mdelta_byframe) {
   return(result)  
 }
 
-read_intervals <- function(fn) {
-  return(read.csv(fn))
+read_intervals <- function(fn, ...) {
+  return(read.csv(fn, ...))
 }
 
 cutoff_mdelta <- function(cutoff, intervals) {

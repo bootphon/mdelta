@@ -16,7 +16,8 @@ source("../src/analysis/clean.R")
 
 ```{r setup, include=FALSE, cache=FALSE}
 MDELTA_FNS <- dir(
-"/Users/emd/Volumes/oberon/fhgfs/bootphon/scratch/edunbar/buckeye_fb/fb_mdelta_cos",
+"/Users/emd/xitsonga_mdelta",
+#"/Users/emd/Volumes/oberon/fhgfs/bootphon/scratch/edunbar/buckeye_fb/fb_mdelta_cos",
 full.names=T)
 VAD_INTERVALS_FN <- "../data/buckeye_vad.csv"
 ```
